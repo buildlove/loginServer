@@ -52,13 +52,13 @@ let userTable = {
     axios.post('/user', params).then((res)=> {
       if(res.data && res.data.code){
         // @ts-ignore
-        ELEMENT.Message.success(res.data.message)
+        Element.Message.success(res.data.message)
         sessionStorage.setItem('userId', res.data.data.userId)
         // 跳转链接
 
       } else {
         // @ts-ignore
-        ELEMENT.Message({
+        Element.Message({
           type: 'error',
           message: res.data.message
         })

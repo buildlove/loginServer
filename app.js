@@ -1,3 +1,4 @@
+// @ts-nocheck
 var createError = require('http-errors');
 var express = require('express');
 var ejs = require('ejs');
@@ -11,18 +12,21 @@ var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var registerRouter = require('./routes/register');
 var userRouter = require('./routes/user');
+var emailRouter = require('./routes/email');
 
 var app = express();
 
 mysql_help.config({
   "mysql": {
-    "host": "127.0.0.2",
+    "host": "127.0.0.1",
     "port": "3306",
     "user": "root",
     "password": "Lixiaoqi2468",
     "database": 'jobs',
     "env": "dev" //"prod"
   }
+}, (newCf)=> {
+
 })
 
 // view engine setup
@@ -35,6 +39,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+  res.mysqlHelp = mysql_help
+  next();
+});
 
 // express中是把session信息存储在内存中
 // 配置session
@@ -50,6 +59,7 @@ app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/user', userRouter);
+app.use('/email', emailRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

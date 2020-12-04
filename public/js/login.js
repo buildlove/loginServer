@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 let content = `
 <div class="content">
@@ -86,6 +87,7 @@ let content = `
   </div>
 </div>
 `
+let element = window.ELEMENT || Element  
 let loginPage = {
   template: content,
   data() {
@@ -119,7 +121,7 @@ let loginPage = {
         if(!this.formLabelAlign.password || !this.formLabelAlign.username) error = '请输入账号密码'
         if(error){
           // @ts-ignore
-          ELEMENT.Message({
+          element.Message({
             type: 'error',
             message: error
           })
@@ -139,13 +141,15 @@ let loginPage = {
         axios.post('/login', params).then((res)=> {
           if(res.data && res.data.code){
             // @ts-ignore
-            ELEMENT.Message.success(res.data.message)
+            element.Message.success(res.data.message)
             sessionStorage.setItem('userId', res.data.data.userId)
+            sessionStorage.setItem('token', res.data.data.token)
             // 跳转链接
-
+            location.href = '/index'
           } else {
+            this.getVerifyCode()
             // @ts-ignore
-            ELEMENT.Message({
+            element.Message({
               type: 'error',
               message: res.data.message
             })
@@ -163,9 +167,12 @@ let loginPage = {
         let error = ''
         if(this.formLabelAlign.password !== this.formLabelAlign.repassword) error = '密码不一致, 请重新输入'
         if(!this.formLabelAlign.password || !this.formLabelAlign.username) error = '请输入账号密码'
+        if(String(this.formLabelAlign.password).length < 6) error = '密码必须设置6位数或以上'
+        if(!this.formLabelAlign.username.match('^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$')) error = '账号必须是邮箱格式'
         if(error){
+          console.log(element)
           // @ts-ignore
-          ELEMENT.Message({
+          element.Message({
             type: 'error',
             message: error
           })
@@ -184,7 +191,7 @@ let loginPage = {
         axios.post('/register', params, { headers: {publickey: this.publicKey} }).then((res)=> {
           if(res.data && res.data.code){
             // @ts-ignore
-            ELEMENT.Message({
+            element.Message({
               type: 'success',
               message: res.data.message,
               duration: 0
@@ -192,7 +199,7 @@ let loginPage = {
             self.reg = false
           } else {
             // @ts-ignore
-            ELEMENT.Message({
+            element.Message({
               type: 'error',
               message: res.data.message
             })

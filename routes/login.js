@@ -82,10 +82,13 @@ router.post('/', async function(req, res, next) {
     let userTable = new mysql_help('user')
     try{
       let info = await userTable.getRowsByWhere({username, password: showPassWord})
-      let userInfo = info && info.status && info.result[0].userid
-  
-      if(userInfo){
-        res.json({code: 1, message: '登陆成功', data: {userId: userInfo}})
+      if(info.status){
+        let userInfo = info.result[0]
+        const tokenString = userInfo.userid+'_'+userInfo.username+'_'+userInfo.create_time
+        res.json({code: 1, message: '登陆成功', data: {
+          userId: userInfo.userid,
+          token: aesEncrypt(tokenString)
+        }})
       }else{
         res.json({code: 0, message: '账号密码输入错误, 或状态为无效用户'})
       }
